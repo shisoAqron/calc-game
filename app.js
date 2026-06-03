@@ -34,9 +34,14 @@ const state = {
   correctCount: 0,
   current: null,    // { a, b, op, answer }
   input: "",
-  timeLeft: 0,
-  timerId: null,
-  locked: false,    // 演出中の入力ロック
+  timeLeft: 0,        // のこり秒数（小数）
+  rafId: 0,
+  timerRunning: false,
+  tStart: 0,          // 計測開始時刻
+  tDuration: 0,       // 制限時間(ms)
+  tPausedAccum: 0,    // ポーズで止まっていた合計時間(ms)
+  tPauseStart: 0,     // ポーズ開始時刻
+  locked: false,      // 演出中の入力ロック
   paused: false,
 };
 
@@ -169,9 +174,9 @@ function nextQuestion() {
   $("answer-box").classList.remove("is-correct", "is-wrong");
   setMascot("⭐", "がんばろう！");
 
-  // 進捗
-  $("progress-label").textContent = `${state.qIndex} / ${QUESTIONS_PER_GAME}`;
-  $("progress-bar").style.width = `${((state.qIndex - 1) / QUESTIONS_PER_GAME) * 100}%`;
+  // 進捗（HUDに「何問目か」を表示）
+  $("q-current").textContent = state.qIndex;
+  $("q-total").textContent = QUESTIONS_PER_GAME;
 
   startTimer();
 }
@@ -195,28 +200,48 @@ function setMascot(face, words) {
    タイマー（爆弾の導火線）
    ==================================================== */
 function startTimer() {
-  clearInterval(state.timerId);
+  cancelAnimationFrame(state.rafId);
+  state.tDuration = DIFFICULTY[state.diff].time * 1000;
+  state.tStart = performance.now();
+  state.tPausedAccum = 0;
+  state.tPauseStart = 0;
   state.timeLeft = DIFFICULTY[state.diff].time;
-  updateTimerUI();
-  state.timerId = setInterval(() => {
-    if (state.paused) return;
-    state.timeLeft--;
-    updateTimerUI();
-    if (state.timeLeft <= 0) {
-      clearInterval(state.timerId);
-      handleTimeout();
-    }
-  }, 1000);
+  state.timerRunning = true;
+  updateTimerUI(1);
+  state.rafId = requestAnimationFrame(tick);
 }
 
-function updateTimerUI() {
-  $("time-value").textContent = Math.max(0, state.timeLeft);
-  const danger = state.timeLeft <= 5;
-  $("bomb").classList.toggle("is-danger", danger);
+// 導火線を毎フレームなめらかに更新
+function tick() {
+  if (!state.timerRunning) return;
+  if (state.paused) {
+    state.rafId = requestAnimationFrame(tick);
+    return;
+  }
+  const elapsed = performance.now() - state.tStart - state.tPausedAccum;
+  const remaining = Math.max(0, state.tDuration - elapsed);
+  state.timeLeft = remaining / 1000;
+  updateTimerUI(remaining / state.tDuration);
+
+  if (remaining <= 0) {
+    state.timerRunning = false;
+    handleTimeout();
+    return;
+  }
+  state.rafId = requestAnimationFrame(tick);
+}
+
+function updateTimerUI(fraction) {
+  const pct = Math.max(0, Math.min(1, fraction)) * 100;
+  $("fuse-fill").style.width = pct + "%";
+  $("fuse-spark").style.opacity = pct <= 2 ? "0" : "1";
+  $("time-value").textContent = Math.max(0, Math.ceil(state.timeLeft));
+  $("fuse").classList.toggle("is-danger", state.timeLeft <= 5);
 }
 
 function stopTimer() {
-  clearInterval(state.timerId);
+  state.timerRunning = false;
+  cancelAnimationFrame(state.rafId);
 }
 
 /* ====================================================
@@ -286,7 +311,7 @@ function onCorrect() {
   state.maxStreak = Math.max(state.maxStreak, state.streak);
 
   // スコア: 基本10点 + のこり時間ボーナス + れんぞくボーナス
-  const gain = 10 + Math.max(0, state.timeLeft) + (state.streak - 1) * 2;
+  const gain = 10 + Math.max(0, Math.round(state.timeLeft)) + (state.streak - 1) * 2;
   state.score += gain;
 
   $("score-value").textContent = state.score;
@@ -366,7 +391,6 @@ function boomEffect() {
    ==================================================== */
 function endGame() {
   stopTimer();
-  $("progress-bar").style.width = "100%";
 
   $("result-score").textContent = state.score;
   $("result-correct").textContent = state.correctCount;
@@ -406,11 +430,16 @@ function initResult() {
 function initPause() {
   const overlay = $("pause-overlay");
   $("pause-btn").addEventListener("click", () => {
-    if (state.locked) return;
+    if (state.locked || state.paused) return;
     state.paused = true;
+    state.tPauseStart = performance.now();
     overlay.classList.add("is-on");
   });
   $("resume-btn").addEventListener("click", () => {
+    if (state.tPauseStart) {
+      state.tPausedAccum += performance.now() - state.tPauseStart;
+      state.tPauseStart = 0;
+    }
     state.paused = false;
     overlay.classList.remove("is-on");
   });

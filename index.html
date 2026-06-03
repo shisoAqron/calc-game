@@ -64,15 +64,9 @@
       <header class="hud">
         <button id="pause-btn" class="hud-pause" aria-label="ポーズ">⏸</button>
 
-        <div class="hud-timer">
-          <div class="bomb" id="bomb">
-            <div class="bomb-fuse"><span class="bomb-spark" id="bomb-spark">✨</span></div>
-            <div class="bomb-body" id="bomb-body">💣</div>
-          </div>
-          <div class="hud-timer-text">
-            <span class="hud-timer-label">のこり時間</span>
-            <span class="hud-timer-value"><b id="time-value">20</b>びょう</span>
-          </div>
+        <div class="hud-progress">
+          <span class="hud-progress-label">もんだい</span>
+          <span class="hud-progress-value"><b id="q-current">1</b> / <span id="q-total">10</span></span>
         </div>
 
         <div class="hud-stats">
@@ -92,9 +86,13 @@
         </div>
       </header>
 
-      <div class="progress">
-        <div class="progress-bar" id="progress-bar"></div>
-        <span class="progress-label" id="progress-label">1 / 10</span>
+      <!-- 爆弾の導火線（時間制限ゲージ） -->
+      <div class="fuse" id="fuse">
+        <div class="bomb" id="bomb"><span class="bomb-body">💣</span></div>
+        <div class="fuse-track">
+          <div class="fuse-fill" id="fuse-fill"><span class="fuse-spark" id="fuse-spark">🔥</span></div>
+        </div>
+        <span class="fuse-sec"><b id="time-value">20</b>びょう</span>
       </div>
 
       <main class="play">

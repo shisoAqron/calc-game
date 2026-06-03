@@ -234,33 +234,18 @@ body {
 }
 .hud-pause:active { transform: translateY(2px); }
 
-.hud-timer { display: flex; align-items: center; gap: 6px; }
-.bomb { position: relative; width: 42px; height: 48px; }
-.bomb-body {
-  font-size: 36px;
-  line-height: 1;
-  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.3));
+/* もんだいの進行状況 */
+.hud-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.05;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
-.bomb-fuse {
-  position: absolute;
-  top: -4px;
-  right: 4px;
-  font-size: 14px;
-}
-.bomb-spark { display: inline-block; animation: spark 0.4s steps(2) infinite; }
-@keyframes spark { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0.5; transform: scale(0.7) rotate(20deg); } }
-.bomb.is-danger { animation: bomb-shake 0.25s linear infinite; }
-.bomb.is-danger .bomb-body { filter: drop-shadow(0 0 6px #ff4d4d) saturate(1.6); }
-@keyframes bomb-shake {
-  0%, 100% { transform: translate(0, 0) rotate(0); }
-  25% { transform: translate(-2px, 1px) rotate(-6deg); }
-  75% { transform: translate(2px, -1px) rotate(6deg); }
-}
-
-.hud-timer-text { display: flex; flex-direction: column; line-height: 1.1; }
-.hud-timer-label { font-size: 10px; color: #fff; opacity: 0.95; }
-.hud-timer-value { font-size: 13px; color: #fff; }
-.hud-timer-value b { font-size: 19px; color: #fff260; }
+.hud-progress-label { font-size: 11px; opacity: 0.95; }
+.hud-progress-value { font-size: 15px; }
+.hud-progress-value b { font-size: 26px; color: #fff260; }
 
 .hud-stats { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
 .hud-stat {
@@ -278,31 +263,63 @@ body {
 .hud-stat-num { font-size: 15px; color: var(--ink); }
 .hud-stat--streak .hud-stat-num b { color: var(--accent); font-size: 17px; }
 
-/* ---------- 進捗バー ---------- */
-.progress {
-  position: relative;
-  height: 14px;
-  margin: 10px 2px 0;
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #ffe16b, #ff9f43);
-  border-radius: 999px;
-  transition: width 0.4s ease;
-}
-.progress-label {
-  position: absolute;
-  inset: 0;
+/* ---------- 導火線ゲージ（時間制限） ---------- */
+.fuse {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  color: #fff;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  gap: 8px;
+  margin: 12px 2px 0;
+}
+.bomb { position: relative; flex: none; }
+.bomb-body {
+  display: block;
+  font-size: 30px;
+  line-height: 1;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.3));
+  transform-origin: center;
+}
+.fuse-track {
+  position: relative;
+  flex: 1;
+  height: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 999px;
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.22);
+}
+.fuse-fill {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffd24a 0%, #ff9f2e 60%, #ff6b3d 100%);
+  box-shadow: 0 0 6px rgba(255, 160, 40, 0.6);
+}
+.fuse-spark {
+  position: absolute;
+  top: 50%;
+  right: -7px;
+  font-size: 18px;
+  filter: drop-shadow(0 0 5px #ffae00);
+  animation: spark 0.25s steps(2) infinite;
+}
+@keyframes spark {
+  0%   { transform: translateY(-50%) scale(1) rotate(-8deg); }
+  100% { transform: translateY(-50%) scale(0.78) rotate(10deg); }
+}
+.fuse-sec { flex: none; min-width: 46px; text-align: right; font-size: 12px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.25); }
+.fuse-sec b { font-size: 18px; color: #fff260; }
+
+/* のこり時間がすくないとき */
+.fuse.is-danger .bomb-body {
+  filter: drop-shadow(0 0 7px #ff3b3b) saturate(1.7);
+  animation: bomb-shake 0.22s linear infinite;
+}
+.fuse.is-danger .fuse-fill { background: linear-gradient(90deg, #ff8a3d, #ff2d2d); }
+.fuse.is-danger .fuse-sec b { color: #ffd0d0; }
+@keyframes bomb-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  25% { transform: translate(-2px, 1px) rotate(-7deg); }
+  75% { transform: translate(2px, -1px) rotate(7deg); }
 }
 
 /* ====================================================
