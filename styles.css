@@ -176,11 +176,11 @@ body {
 .start-btn {
   margin-top: 4px;
   font-family: "Mochiy Pop One", sans-serif;
-  font-size: 26px;
+  font-size: 22px;
   color: #fff;
   border: none;
   border-radius: 999px;
-  padding: 16px 56px;
+  padding: 13px 34px;
   background: linear-gradient(180deg, #ff8a5b, var(--accent));
   box-shadow: 0 7px 0 #c94f4f, 0 12px 18px rgba(0, 0, 0, 0.2);
   cursor: pointer;
@@ -196,6 +196,48 @@ body {
   box-shadow: 0 3px 0 #c94f4f;
   animation: none;
 }
+
+/* スタートは中央、ミュートはその左に配置 */
+.start-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 4px;
+}
+.start-row .start-btn { margin-top: 0; }
+
+.mute-btn {
+  position: absolute;
+  left: 0;             /* 左端をカード（しゅるい/むずかしさ）に揃える */
+  top: 50%;
+  margin-top: -30px;   /* 高さ60pxの半分で縦中央 */
+  flex: none;
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.mute-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.12); }
+.mute-ico { font-size: 26px; line-height: 1; }
+.mute-ban {
+  position: absolute;
+  font-size: 42px;          /* スピーカーより一回り大きく重ねる */
+  line-height: 1;
+  display: none;            /* ミュート時のみ表示 */
+  pointer-events: none;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+}
+.mute-btn.is-muted { background: rgba(255, 255, 255, 0.8); }
+.mute-btn.is-muted .mute-ban { display: block; }
 
 .home-deco {
   position: absolute;
