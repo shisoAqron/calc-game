@@ -42,6 +42,17 @@ python3 -m http.server 8000
 > ブランチから直接公開する場合は Source を「Deploy from a branch」にして
 > `main` / `(root)` を選んでも動きます（`.nojekyll` 同梱済み）。
 
+## アイコン・リンクプレビュー（OGP）
+
+- **ファビコン**（タブのアイコン）は爆弾の絵文字 💣（インラインSVG）
+- **apple-touch-icon.png** … スマホのホーム画面に追加したときの爆弾アイコン
+- **og-image.png**（1200×630）… Discord / LINE / X などにURLを貼ったときの展開画像
+- OGP のメタタグは `index.html` の `<head>` 内に記載
+
+> リンクプレビューの絶対URLは `https://shisoaqron.github.io/calc-game/` で設定済みです。
+> 公開URLを変える場合は `index.html` の `og:url` / `og:image` / `twitter:image` を合わせて変更してください。
+> LINE などはキャッシュが強いので、URL変更後は各サービスのデバッガ（例: Facebook Sharing Debugger）で再取得すると確実です。
+
 ## 調整できるところ（`app.js` 冒頭）
 
 - `QUESTIONS_PER_GAME` … 1ゲームの問題数（初期値 10）
