@@ -17,7 +17,13 @@
   --shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  /* iOS Safari の「ダブルタップでズーム」を無効化（同じ数字の連打対策）。
+     スクロールやピンチズームは維持される。 */
+  touch-action: manipulation;
+}
 
 html, body {
   margin: 0;
