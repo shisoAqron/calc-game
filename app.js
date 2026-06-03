@@ -397,13 +397,18 @@ function endGame() {
   $("result-total").textContent = QUESTIONS_PER_GAME;
   $("result-streak").textContent = state.maxStreak;
 
-  // 成績にあわせて 星・メダル・タイトル
-  const ratio = state.correctCount / QUESTIONS_PER_GAME;
+  // 成績にあわせて 星・メダル・タイトル（4段階）
+  //  全問正解     → 星3つ
+  //  8割以上      → 星2つ
+  //  4割以上      → 星1つ
+  //  4割未満      → 星0こ
+  const correct = state.correctCount;
+  const total = QUESTIONS_PER_GAME;
   let stars, medal, title;
-  if (ratio >= 0.9) { stars = 3; medal = "🏆"; title = "パーフェクト！"; }
-  else if (ratio >= 0.6) { stars = 2; medal = "🥇"; title = "クリア！"; }
-  else if (ratio >= 0.3) { stars = 1; medal = "🥈"; title = "がんばった！"; }
-  else { stars = 0; medal = "🥉"; title = "またチャレンジ！"; }
+  if (correct === total) { stars = 3; medal = "🏆"; title = "パーフェクト！"; }
+  else if (correct * 10 >= total * 8) { stars = 2; medal = "🥇"; title = "よくできたね！"; }
+  else if (correct * 10 >= total * 4) { stars = 1; medal = "🥈"; title = "がんばったね！"; }
+  else { stars = 0; medal = "💪"; title = "つぎは がんばろう！"; }
 
   $("result-medal").textContent = medal;
   $("result-title").textContent = title;
