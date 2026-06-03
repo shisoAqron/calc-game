@@ -5,6 +5,7 @@
 
 /* ---------- 設定 ---------- */
 const QUESTIONS_PER_GAME = 10;
+const ENDLESS_LIVES = 3; // エンドレス: 何回まちがえたら終わりか
 
 // むずかしさごとの 数のはんい・もちじかん
 const DIFFICULTY = {
@@ -19,6 +20,8 @@ const OP_INFO = {
   mul: { sign: "×", fn: (a, b) => a * b },
   div: { sign: "÷", fn: (a, b) => a / b },
 };
+
+const DIFF_LABEL = { easy: "かんたん", normal: "ふつう", hard: "むずかしい" };
 
 const GOOD_WORDS = ["せいかい！", "やったね！", "すごい！", "てんさい！", "おみごと！"];
 const BAD_WORDS = ["ざんねん！", "おしい！", "ドンマイ！"];
@@ -201,6 +204,7 @@ const state = {
   streak: 0,
   maxStreak: 0,
   correctCount: 0,
+  mistakes: 0,      // エンドレス: まちがえた回数
   current: null,    // { a, b, op, answer }
   input: "",
   timeLeft: 0,        // のこり秒数（小数）
@@ -256,14 +260,24 @@ function initHome() {
     state.diff = btn.dataset.diff;
   });
 
-  // モード（百マス／エンドレス）: まだ未実装なのでお知らせを出すだけ
+  // モード（百マス／エンドレス）
   const modeGrid = $("mode-grid");
   modeGrid.addEventListener("click", (e) => {
     const btn = e.target.closest(".mode-btn");
     if (!btn) return;
     Sound.unlock();
     Sound.select();
-    showToast("きのうついかをまっててね");
+
+    if (btn.dataset.mode === "endless") {
+      // タップで選択／解除（もう一度押すと通常モードに戻る）
+      const willSelect = !btn.classList.contains("is-selected");
+      modeGrid.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("is-selected"));
+      if (willSelect) btn.classList.add("is-selected");
+      state.mode = willSelect ? "endless" : "none";
+    } else {
+      // 百マスはまだ未実装
+      showToast("きのうついかをまっててね");
+    }
   });
 
   $("start-btn").addEventListener("click", startGame);
@@ -289,10 +303,12 @@ function startGame() {
   state.streak = 0;
   state.maxStreak = 0;
   state.correctCount = 0;
+  state.mistakes = 0;
   state.paused = false;
 
   $("score-value").textContent = "0";
   $("streak-value").textContent = "0";
+  renderLives();
 
   showScreen("game");
   nextQuestion();
@@ -343,7 +359,12 @@ function makeQuestion() {
 
 /* ---------- 次の問題へ ---------- */
 function nextQuestion() {
-  if (state.qIndex >= QUESTIONS_PER_GAME) {
+  // 終了条件: エンドレスは3回ミスで終了、通常は規定問題数で終了
+  const finished =
+    state.mode === "endless"
+      ? state.mistakes >= ENDLESS_LIVES
+      : state.qIndex >= QUESTIONS_PER_GAME;
+  if (finished) {
     endGame();
     return;
   }
@@ -370,9 +391,28 @@ function nextQuestion() {
 
   // 進捗（HUDに「何問目か」を表示）
   $("q-current").textContent = state.qIndex;
-  $("q-total").textContent = QUESTIONS_PER_GAME;
+  if (state.mode === "endless") {
+    $("q-total-sep").style.display = "none"; // エンドレスは総数を出さない
+  } else {
+    $("q-total-sep").style.display = "";
+    $("q-total").textContent = QUESTIONS_PER_GAME;
+  }
 
   startTimer();
+}
+
+/* ---------- ライフ表示（エンドレス） ---------- */
+function renderLives() {
+  const el = $("lives");
+  if (state.mode !== "endless") {
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+  const left = ENDLESS_LIVES - state.mistakes;
+  let s = "";
+  for (let i = 0; i < ENDLESS_LIVES; i++) s += i < left ? "❤️" : "💔";
+  el.textContent = s;
 }
 
 /* ---------- 答え表示 ---------- */
@@ -526,6 +566,13 @@ function onCorrect() {
 function onWrong(isTimeout) {
   state.streak = 0;
   $("streak-value").textContent = "0";
+
+  // エンドレス: ライフを1つ減らす（ハートが割れる）
+  if (state.mode === "endless") {
+    state.mistakes++;
+    renderLives();
+  }
+
   $("q-mark").textContent = state.current.answer; // 正しい答えを見せる
   $("answer-box").classList.add("is-wrong");
   setMascot("😣", isTimeout ? "じかんぎれ…" : "ちがうよ〜");
@@ -591,29 +638,44 @@ function endGame() {
 
   $("result-score").textContent = state.score;
   $("result-correct").textContent = state.correctCount;
-  $("result-total").textContent = QUESTIONS_PER_GAME;
-  $("result-streak").textContent = state.maxStreak;
+  $("result-diff").textContent = DIFF_LABEL[state.diff] || state.diff;
 
-  // 成績にあわせて 星・メダル・タイトル（4段階）
-  //  全問正解     → 星3つ
-  //  8割以上      → 星2つ
-  //  4割以上      → 星1つ
-  //  4割未満      → 星0こ
-  const correct = state.correctCount;
-  const total = QUESTIONS_PER_GAME;
-  let stars, medal, title;
-  if (correct === total) { stars = 3; medal = "🏆"; title = "パーフェクト！"; }
-  else if (correct * 10 >= total * 8) { stars = 2; medal = "🥈"; title = "よくできたね！"; }
-  else if (correct * 10 >= total * 4) { stars = 1; medal = "🥉"; title = "がんばったね！"; }
-  else { stars = 0; medal = "😭"; title = "つぎは がんばろう！"; }
+  if (state.mode === "endless") {
+    // --- エンドレス用リザルト ---
+    $("result-correct-sep").style.display = "none";            // 「/ 10」を隠す
+    $("result-correct-row").classList.add("result-row--big");  // せいかいもスコアと同じ大きさに
+    $("result-streak-row").style.display = "none";             // れんぞくは出さない
+    $("result-stars").style.display = "none";                  // 星は出さない
+    $("result-medal").textContent = "🏆";                      // トロフィー固定
+    $("result-title").textContent = "がんばったね！";            // メッセージ固定
+  } else {
+    // --- 通常（規定問題数）リザルト ---
+    $("result-total").textContent = QUESTIONS_PER_GAME;
+    $("result-streak").textContent = state.maxStreak;
+    // エンドレスから戻ったときのために表示を元に戻す
+    $("result-correct-sep").style.display = "";
+    $("result-correct-row").classList.remove("result-row--big");
+    $("result-streak-row").style.display = "";
+    $("result-stars").style.display = "";
 
-  $("result-medal").textContent = medal;
-  $("result-title").textContent = title;
-  const starEls = [];
-  for (let i = 0; i < 3; i++) {
-    starEls.push(i < stars ? "⭐" : '<span class="dim">⭐</span>');
+    // 成績にあわせて 星・メダル・タイトル（4段階）
+    //  全問正解→星3つ / 8割以上→星2つ / 4割以上→星1つ / 4割未満→星0こ
+    const correct = state.correctCount;
+    const total = QUESTIONS_PER_GAME;
+    let stars, medal, title;
+    if (correct === total) { stars = 3; medal = "🏆"; title = "パーフェクト！"; }
+    else if (correct * 10 >= total * 8) { stars = 2; medal = "🥈"; title = "よくできたね！"; }
+    else if (correct * 10 >= total * 4) { stars = 1; medal = "🥉"; title = "がんばったね！"; }
+    else { stars = 0; medal = "😭"; title = "つぎは がんばろう！"; }
+
+    $("result-medal").textContent = medal;
+    $("result-title").textContent = title;
+    const starEls = [];
+    for (let i = 0; i < 3; i++) {
+      starEls.push(i < stars ? "⭐" : '<span class="dim">⭐</span>');
+    }
+    $("result-stars").innerHTML = starEls.join("");
   }
-  $("result-stars").innerHTML = starEls.join("");
 
   showScreen("result");
 }

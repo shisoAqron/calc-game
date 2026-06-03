@@ -100,7 +100,7 @@
 
         <div class="hud-progress">
           <span class="hud-progress-label">もんだい</span>
-          <span class="hud-progress-value"><b id="q-current">1</b> / <span id="q-total">10</span></span>
+          <span class="hud-progress-value"><b id="q-current">1</b><span id="q-total-sep"> / <span id="q-total">10</span></span></span>
         </div>
 
         <div class="hud-stats">
@@ -130,6 +130,9 @@
       </div>
 
       <main class="play">
+        <!-- エンドレスモードのライフ（通常モードでは非表示） -->
+        <div class="lives" id="lives" hidden></div>
+
         <div class="question-card" id="question-card">
           <span id="q-a">8</span>
           <span id="q-op" class="q-op">＋</span>
@@ -178,13 +181,17 @@
             <span class="result-label">スコア</span>
             <span class="result-value" id="result-score">0</span>
           </div>
-          <div class="result-row">
+          <div class="result-row" id="result-correct-row">
             <span class="result-label">せいかい</span>
-            <span class="result-value"><b id="result-correct">0</b> / <span id="result-total">10</span></span>
+            <span class="result-value"><b id="result-correct">0</b><span id="result-correct-sep"> / <span id="result-total">10</span></span></span>
           </div>
-          <div class="result-row">
+          <div class="result-row" id="result-streak-row">
             <span class="result-label">さいこう れんぞく</span>
             <span class="result-value"><b id="result-streak">0</b> れんぞく</span>
+          </div>
+          <div class="result-row" id="result-diff-row">
+            <span class="result-label">むずかしさ</span>
+            <span class="result-value" id="result-diff">かんたん</span>
           </div>
         </div>
 

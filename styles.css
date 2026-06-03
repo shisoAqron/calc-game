@@ -428,6 +428,16 @@ body {
   min-height: 0;
 }
 
+/* エンドレスモードのライフ表示 */
+.lives {
+  display: flex;
+  gap: 10px;
+  font-size: 40px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
+}
+.lives[hidden] { display: none; }
+
 .question-card {
   width: 100%;
   background: var(--card);
