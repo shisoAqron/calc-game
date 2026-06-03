@@ -582,9 +582,9 @@ function endGame() {
   const total = QUESTIONS_PER_GAME;
   let stars, medal, title;
   if (correct === total) { stars = 3; medal = "🏆"; title = "パーフェクト！"; }
-  else if (correct * 10 >= total * 8) { stars = 2; medal = "🥇"; title = "よくできたね！"; }
-  else if (correct * 10 >= total * 4) { stars = 1; medal = "🥈"; title = "がんばったね！"; }
-  else { stars = 0; medal = "💪"; title = "つぎは がんばろう！"; }
+  else if (correct * 10 >= total * 8) { stars = 2; medal = "🥈"; title = "よくできたね！"; }
+  else if (correct * 10 >= total * 4) { stars = 1; medal = "🥉"; title = "がんばったね！"; }
+  else { stars = 0; medal = "😭"; title = "つぎは がんばろう！"; }
 
   $("result-medal").textContent = medal;
   $("result-title").textContent = title;
