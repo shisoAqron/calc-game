@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#5cc7f3" />
+  <title>けいさんゲーム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=M+PLUS+Rounded+1c:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ============ トップページ ============ -->
+    <section id="screen-home" class="screen is-active">
+      <div class="home-deco home-deco--1">⭐</div>
+      <div class="home-deco home-deco--2">☁️</div>
+      <div class="home-deco home-deco--3">🌸</div>
+
+      <div class="home-inner">
+        <h1 class="home-title">けいさん<br />ゲーム</h1>
+        <p class="home-sub">もんだいを えらんでね</p>
+
+        <div class="home-group">
+          <h2 class="home-label">けいさんの しゅるい</h2>
+          <div class="op-grid" id="op-grid">
+            <button class="op-btn is-selected" data-op="add">
+              <span class="op-sign">＋</span><span class="op-name">たしざん</span>
+            </button>
+            <button class="op-btn" data-op="sub">
+              <span class="op-sign">－</span><span class="op-name">ひきざん</span>
+            </button>
+            <button class="op-btn" data-op="mul">
+              <span class="op-sign">×</span><span class="op-name">かけざん</span>
+            </button>
+            <button class="op-btn" data-op="div">
+              <span class="op-sign">÷</span><span class="op-name">わりざん</span>
+            </button>
+            <button class="op-btn op-btn--mix" data-op="mix">
+              <span class="op-sign">🎲</span><span class="op-name">ミックス</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="home-group">
+          <h2 class="home-label">むずかしさ</h2>
+          <div class="diff-grid" id="diff-grid">
+            <button class="diff-btn is-selected" data-diff="easy">かんたん</button>
+            <button class="diff-btn" data-diff="normal">ふつう</button>
+            <button class="diff-btn" data-diff="hard">むずかしい</button>
+          </div>
+        </div>
+
+        <button id="start-btn" class="start-btn">
+          <span>スタート！</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============ ゲームページ ============ -->
+    <section id="screen-game" class="screen">
+      <header class="hud">
+        <button id="pause-btn" class="hud-pause" aria-label="ポーズ">⏸</button>
+
+        <div class="hud-timer">
+          <div class="bomb" id="bomb">
+            <div class="bomb-fuse"><span class="bomb-spark" id="bomb-spark">✨</span></div>
+            <div class="bomb-body" id="bomb-body">💣</div>
+          </div>
+          <div class="hud-timer-text">
+            <span class="hud-timer-label">のこり時間</span>
+            <span class="hud-timer-value"><b id="time-value">20</b>びょう</span>
+          </div>
+        </div>
+
+        <div class="hud-stats">
+          <div class="hud-stat hud-stat--score">
+            <span class="hud-stat-ico">🏆</span>
+            <div class="hud-stat-txt">
+              <span class="hud-stat-label">スコア</span>
+              <span class="hud-stat-num" id="score-value">0</span>
+            </div>
+          </div>
+          <div class="hud-stat hud-stat--streak">
+            <span class="hud-stat-ico">⭐</span>
+            <div class="hud-stat-txt">
+              <span class="hud-stat-num"><b id="streak-value">0</b>れんぞく</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="progress">
+        <div class="progress-bar" id="progress-bar"></div>
+        <span class="progress-label" id="progress-label">1 / 10</span>
+      </div>
+
+      <main class="play">
+        <div class="question-card" id="question-card">
+          <span id="q-a">8</span>
+          <span id="q-op" class="q-op">＋</span>
+          <span id="q-b">7</span>
+          <span class="q-eq">＝</span>
+          <span class="q-mark" id="q-mark">？</span>
+        </div>
+
+        <div class="answer-wrap">
+          <div class="answer-box" id="answer-box"><span class="answer-placeholder">？</span></div>
+          <div class="mascot" id="mascot">⭐<span class="mascot-bubble" id="mascot-bubble">がんばろう！</span></div>
+        </div>
+
+        <!-- 演出オーバーレイ -->
+        <div class="fx" id="fx" aria-hidden="true">
+          <div class="fx-confetti" id="fx-confetti"></div>
+          <div class="fx-text" id="fx-text"></div>
+          <div class="fx-emoji" id="fx-emoji"></div>
+        </div>
+      </main>
+
+      <div class="keypad" id="keypad">
+        <button class="key" data-key="1">1</button>
+        <button class="key" data-key="2">2</button>
+        <button class="key" data-key="3">3</button>
+        <button class="key" data-key="4">4</button>
+        <button class="key" data-key="5">5</button>
+        <button class="key" data-key="6">6</button>
+        <button class="key" data-key="7">7</button>
+        <button class="key" data-key="8">8</button>
+        <button class="key" data-key="9">9</button>
+        <button class="key key--fn" data-key="clear">けす</button>
+        <button class="key" data-key="0">0</button>
+        <button class="key key--enter" data-key="enter">けってい</button>
+      </div>
+    </section>
+
+    <!-- ============ リザルトページ ============ -->
+    <section id="screen-result" class="screen">
+      <div class="result-inner">
+        <div class="result-medal" id="result-medal">🏆</div>
+        <h1 class="result-title" id="result-title">クリア！</h1>
+
+        <div class="result-card">
+          <div class="result-row result-row--big">
+            <span class="result-label">スコア</span>
+            <span class="result-value" id="result-score">0</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">せいかい</span>
+            <span class="result-value"><b id="result-correct">0</b> / <span id="result-total">10</span></span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">さいこう れんぞく</span>
+            <span class="result-value"><b id="result-streak">0</b> れんぞく</span>
+          </div>
+        </div>
+
+        <div class="result-stars" id="result-stars">⭐⭐⭐</div>
+
+        <div class="result-btns">
+          <button id="retry-btn" class="result-btn result-btn--retry">もういちど</button>
+          <button id="home-btn" class="result-btn result-btn--home">トップにもどる</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ポーズ オーバーレイ ============ -->
+    <div id="pause-overlay" class="pause-overlay">
+      <div class="pause-box">
+        <h2>ひとやすみ</h2>
+        <button id="resume-btn" class="pause-resume">つづける</button>
+        <button id="quit-btn" class="pause-quit">やめる</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
