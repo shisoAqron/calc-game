@@ -142,8 +142,6 @@ body {
 }
 .op-btn .op-sign { font-size: 26px; line-height: 1; }
 .op-btn .op-name { font-size: 13px; color: var(--ink); }
-.op-btn--mix { grid-column: span 3; flex-direction: row; gap: 8px; }
-.op-btn--mix .op-sign { font-size: 22px; }
 .op-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #d9c7a3; }
 .op-btn.is-selected {
   background: linear-gradient(180deg, #ffd86b, #ffb43d);
@@ -172,6 +170,58 @@ body {
   color: #fff;
   box-shadow: 0 4px 0 #1f8fc9;
 }
+
+/* むずかしさ と モード の区切り線 */
+.home-divider {
+  border: none;
+  border-top: 2px dashed #e4d6ac;
+  margin: 12px 2px;
+}
+
+/* モード（百マス／エンドレス） */
+.mode-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.mode-btn {
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 14px;
+  border: none;
+  border-radius: 16px;
+  padding: 12px 4px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 4px 0 #d9c7a3;
+  cursor: pointer;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.mode-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #d9c7a3; }
+/* 将来のモード選択用（いまは未使用） */
+.mode-btn.is-selected {
+  background: linear-gradient(180deg, #c79bff, #9a5cf0);
+  color: #fff;
+  box-shadow: 0 4px 0 #6f3fc0;
+}
+
+/* トースト（お知らせ）: 画面中央にふわっと表示 */
+.toast {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, calc(-50% + 12px));
+  max-width: 80%;
+  background: rgba(40, 30, 20, 0.92);
+  color: #fff;
+  font-weight: 800;
+  font-size: 16px;
+  padding: 14px 24px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 60;
+}
+.toast.is-on { opacity: 1; transform: translate(-50%, -50%); }
 
 .start-btn {
   margin-top: 4px;

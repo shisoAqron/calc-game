@@ -195,6 +195,7 @@ const Sound = {
 const state = {
   op: "add",
   diff: "easy",
+  mode: "none",   // 将来用: "none" | "hyakumasu" | "endless"（現在は未実装）
   qIndex: 0,
   score: 0,
   streak: 0,
@@ -255,7 +256,27 @@ function initHome() {
     state.diff = btn.dataset.diff;
   });
 
+  // モード（百マス／エンドレス）: まだ未実装なのでお知らせを出すだけ
+  const modeGrid = $("mode-grid");
+  modeGrid.addEventListener("click", (e) => {
+    const btn = e.target.closest(".mode-btn");
+    if (!btn) return;
+    Sound.unlock();
+    Sound.select();
+    showToast("きのうついかをまっててね");
+  });
+
   $("start-btn").addEventListener("click", startGame);
+}
+
+/* お知らせトーストを一定時間だけ表示 */
+let toastTimer = null;
+function showToast(msg) {
+  const el = $("toast");
+  el.textContent = msg;
+  el.classList.add("is-on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("is-on"), 1900);
 }
 
 /* ====================================================

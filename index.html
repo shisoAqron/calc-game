@@ -61,18 +61,23 @@
             <button class="op-btn" data-op="div">
               <span class="op-sign">÷</span><span class="op-name">わりざん</span>
             </button>
-            <button class="op-btn op-btn--mix" data-op="mix">
+            <button class="op-btn" data-op="mix">
               <span class="op-sign">🎲</span><span class="op-name">ミックス</span>
             </button>
           </div>
         </div>
 
         <div class="home-group">
-          <h2 class="home-label">むずかしさ</h2>
+          <h2 class="home-label">むずかしさ ／ モード</h2>
           <div class="diff-grid" id="diff-grid">
             <button class="diff-btn is-selected" data-diff="easy">かんたん</button>
             <button class="diff-btn" data-diff="normal">ふつう</button>
             <button class="diff-btn" data-diff="hard">むずかしい</button>
+          </div>
+          <hr class="home-divider" />
+          <div class="mode-grid" id="mode-grid">
+            <button class="mode-btn" data-mode="hyakumasu">百マス</button>
+            <button class="mode-btn" data-mode="endless">エンドレス</button>
           </div>
         </div>
 
@@ -191,6 +196,9 @@
         </div>
       </div>
     </section>
+
+    <!-- ============ トースト（お知らせ） ============ -->
+    <div id="toast" class="toast" aria-live="polite"></div>
 
     <!-- ============ ポーズ オーバーレイ ============ -->
     <div id="pause-overlay" class="pause-overlay">
